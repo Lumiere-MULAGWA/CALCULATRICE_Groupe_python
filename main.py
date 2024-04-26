@@ -1,13 +1,13 @@
 import customtkinter
 
+
 # Définition de la classe Operation
 class Operation():
     # Méthode pour gérer les clics sur les boutons
-    def click(self, num):
-        print(num)
+    pass
 
 # Définition de la classe Interface
-class Interface():
+class Interface(Operation):
     # Initialisation de l'interface
     def __init__(self) -> None:
         # Création de la fenêtre principale
@@ -37,7 +37,7 @@ class Interface():
         self.bouttons_avance.grid(row=0, column=1)
 
         # Champ de saisie
-        self.champ_saisi = customtkinter.CTkTextbox(self.frame_champ_saisi, width=500, height=50)
+        self.champ_saisi = customtkinter.CTkTextbox(self.frame_champ_saisi, width=500, height=50, corner_radius=0)
         self.champ_saisi.pack()
         self.champ_saisi.configure(state='disable')
 
@@ -114,9 +114,14 @@ class Interface():
         paranthese_fermante = customtkinter.CTkButton(self.bouttons_avance, text=')', width=50, command=lambda: self.click(')'))
         paranthese_fermante.grid(row = 1, column = 3, padx = 10, pady = 10)
         
+
+        # effacer le tout sur l'afficheur
+        effacer_tout = operer = customtkinter.CTkButton(self.bouttons_avance, text='C', width=50, height=60, command = self.effacer_le_tout, fg_color='red')
+        effacer_tout.grid(row=2, column=0, padx=10, pady=10)
+
         # Bouton pour effectuer une opération
-        operer = customtkinter.CTkButton(self.bouttons_avance, text='=', width=50, height=60, command=lambda: self.equal, fg_color='green')
-        operer.grid(row=2, column=0, padx=10, pady=10)
+        operer = customtkinter.CTkButton(self.bouttons_avance, text='=', width=50, height=60, command =  self.equal, fg_color='green')
+        operer.grid(row=2, column=1, padx=10, pady=10)
 
         # Boucle principale pour l'interface
         self.master.mainloop()
@@ -125,8 +130,15 @@ class Interface():
     def click(self, num):
         self.champ_saisi.configure(state='normal')
         temp = self.champ_saisi.get(1.0, customtkinter.END)
+        last_char = temp.strip('\n')[-1] if len(temp) > 2 else ""
         self.champ_saisi.delete(1.0, customtkinter.END)
-        self.champ_saisi.insert(customtkinter.END, temp.strip('\n') + " " + num)
+
+        if not str(num).isdigit() or  not last_char.isdigit():
+            self.champ_saisi.insert(customtkinter.END, temp.strip('\n') + " " + num)
+                        # inserer un espace si il s'agit d'une operation  ^^^          
+        else:
+            self.champ_saisi.insert(customtkinter.END, temp.strip('\n')  + num)
+
         self.champ_saisi.configure(state='disable')
 
     # Méthode pour effacer le dernier caractère du champ de saisie
@@ -141,6 +153,11 @@ class Interface():
     # Méthode pour évaluer l'expression dans le champ de saisie
     def equal(self):
         pass
+
+    def effacer_le_tout(self):
+        self.champ_saisi.configure(state = 'normal')
+        self.champ_saisi.delete(1.0, customtkinter.END)
+        self.champ_saisi.configure(state = 'disable')
 
 # Création de l'interface
 interface = Interface().create()
